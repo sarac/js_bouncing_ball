@@ -14,11 +14,7 @@ function Ball( x, y){
 }
 
 // Add methods like this.  All Person objects will be able to invoke this
-Ball.prototype.draw = function(){
-
-    // reseize  canvas to be full page
-    ctx.canvas.width  = window.innerWidth;
-    ctx.canvas.height = window.innerHeight;
+Ball.prototype.draw = function(ctx){
 
     // here we now draw the associated shadow
     shadow_scale = this.radius/(1+(H - this.radius -this.y)/100) * 1.8
@@ -38,7 +34,7 @@ Ball.prototype.draw = function(){
 }
 
 
-Ball.prototype.move = function(){
+Ball.prototype.move = function(ctx){
    // Now, lets make the ball move by adding the velocity vectors to its position
     this.y += this.vy;
     this.x += this.vx;
@@ -49,10 +45,17 @@ Ball.prototype.move = function(){
 
     //Perfect! Now, lets make it rebound when it touches the floor
     if(this.y + this.radius > H) {
-      // First, reposition the this on top of the floor and then bounce it!
-      this.y = H - this.radius;
-      this.vy *= -bounceFactor;
-      // The bounceFactor variable that we created decides the elasticity or how elastic the collision will be. If it's 1, then the collision will be perfectly elastic. If 0, then it will be inelastic.
+
+      if ( Math.abs(this.vy) < min_bounce_speed) {
+        this.vy = 0;
+        this.y = H - this.radius;
+      } else {
+        // First, reposition the this on top of the floor and then bounce it!
+        this.y = H - this.radius;
+        this.vy *= -bounceFactor;
+        // The bounceFactor variable that we created decides the elasticity or how elastic the collision will be. If it's 1, then the collision will be perfectly elastic. If 0, then it will be inelastic.
+        audio_bounce.play();
+      }
     }
 
     // Finally check if the this exits the canvas
